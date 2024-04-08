@@ -4,6 +4,8 @@
   "main": "index.js",
   "repository": "https://github.com/AyendiSimeon1/Phraims.git",
   "author": "Simeon <mrayendi1@gmail.com>",
-  "license": "MIT"
-  
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
 }
