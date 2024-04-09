@@ -6,3 +6,10 @@ router.get('/', (req, res) => {
 })
 
 module.exports = router;
+
+/api/users/signup
+/api/users/login
+/api/users/me
+/api/users/update
+/api/users/forgot-password
+/api/users/reset-password
