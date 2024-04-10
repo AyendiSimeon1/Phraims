@@ -4,8 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@prisma/client": "^5.12.1",
     "express": "^4.19.2",
-    "nodemon": "^3.1.0"
+    "nodemailer": "^6.9.13",
+    "nodemon": "^3.1.0",
+    "openssl": "^2.0.0",
+    "openssl-nodejs": "^1.0.5",
+    "passport": "^0.7.0",
+    "ssl": "^1.0.0"
   },
   "devDependencies": {
     "prisma": "^5.12.1"
