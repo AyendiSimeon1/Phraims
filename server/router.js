@@ -5,12 +5,20 @@ const nodemailer = require('nodemailer');
 router.get('/', (req, res) => {
     res.json({ message: 'Hello from Users API' });
 })
+const swaggerSpec = require('./swaggerConfig.js');
+const swaggerUi = require('swagger-ui-express')
 
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
+router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 // Signup route
+/**
+ * @swagger
+ *
+ *
+**/
 
 router.post('/login', (req, res, next) => {
   passport.authenticate('login', (err, user, info) => {
