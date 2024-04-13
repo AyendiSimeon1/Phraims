@@ -3,9 +3,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const nodemailer = require('nodemailer');
-router.get('/', (req, res) => {
-    res.json({ message: 'Hello from Users API' });
-})
+const session = require('express-session');
 const swaggerSpec = require('./swaggerConfig.js');
 const swaggerUi = require('swagger-ui-express')
 
@@ -13,6 +11,20 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
+router.use(express.json());
+router.use(session({
+  secret: 'admin',
+  resave: false,
+  //saveUnitialized: false
+}));
+
+router.use(passport.initialize());
+router.use(passport.session());
+
+
+router.get('/', (req, res) => {
+  res.json({ message: 'Hello from Users API' });
+})
 router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 // Signup route
 /**
@@ -21,21 +33,9 @@ router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
  *
 **/
 
-// router.post('/login', (req, res, next) => {
-//   passport.authenticate('login', (err, user, info) => {
-//     try {
-//       if (err || !user) {
-//         return res.status(400).json({ message: info.message });
-//       }
-//       req.login(user, { session: false }, (error) => {
-//         if (error) return next(error);
-//         return res.json({ message: 'Login successful', user });
-//       });
-//     } catch (error) {
-//       return next(error);
-//     }
-//   })(req, res, next);
-// });
+router.post('/login', passport.authenticate('local'), (req, res) =>{
+  res.json({ user: req.user });
+})
 
 // Signup route
 router.post('/signup', async (req, res, next) => {
