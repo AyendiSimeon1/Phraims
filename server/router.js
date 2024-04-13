@@ -39,7 +39,7 @@ router.post('/login', passport.authenticate('local'), (req, res) =>{
 
 // Signup route
 router.post('/signup', async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, firstname, password } = req.body;
   console.log(req.body);
 
   try {
@@ -57,6 +57,7 @@ router.post('/signup', async (req, res, next) => {
     const newUser = await prisma.User.create ({
       data:{
         email: email,
+        firstName: firstname,
         password: hashPassword,
       }
       });
