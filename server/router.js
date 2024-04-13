@@ -39,7 +39,7 @@ router.post('/login', passport.authenticate('local'), (req, res) =>{
 
 // Signup route
 router.post('/signup', async (req, res, next) => {
-  const { email, firstname, password } = req.body;
+  const { email, firstname, lastname, password } = req.body;
   console.log(req.body);
 
   try {
@@ -58,6 +58,7 @@ router.post('/signup', async (req, res, next) => {
       data:{
         email: email,
         firstName: firstname,
+        lastName: lastname,
         password: hashPassword,
       }
       });
