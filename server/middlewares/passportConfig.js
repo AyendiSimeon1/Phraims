@@ -1,49 +1,38 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
 // Serialize user object to store in session
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-// Deserialize user object from session
-passport.deserializeUser(async (id, done) => {
+passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
-    done(null, user);
-  } catch (error) {
-    done(error);
-  }
-});
-
-// Configure local strategy for login
-passport.use('login', new LocalStrategy(async (username, password, done) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        username: username,
-      },
-    });
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return done(null, false, { message: 'Incorrect username' });
+      return done(null, false, { message: 'Incorrect email.' });
     }
-
-    // Note: You should compare hashed password here
-    if (user.password !== password) {
-      return done(null, false, { message: 'Incorrect password' });
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return done(null, false, { message: 'Incorrect password.' });
     }
-
     return done(null, user);
   } catch (error) {
     return done(error);
   }
 }));
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id } });
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
 
 module.exports = passport;

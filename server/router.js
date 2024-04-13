@@ -1,4 +1,8 @@
-const express = require('express');
+cleà
+r
+  clear
+    clear
+      const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const nodemailer = require('nodemailer');
@@ -9,7 +13,7 @@ const swaggerSpec = require('./swaggerConfig.js');
 const swaggerUi = require('swagger-ui-express')
 
 const { PrismaClient } = require('@prisma/client');
-
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
@@ -38,7 +42,7 @@ router.post('/login', (req, res, next) => {
 
 // Signup route
 router.post('/signup', async (req, res, next) => {
-  passport.authenticate('signup', async (err, user, info) => {
+  passport.authenticate( async (err, user, info) => {
     try {
       if (err || !user) {
         return res.status(400).json({ message: info.message });
