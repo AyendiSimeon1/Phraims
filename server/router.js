@@ -39,27 +39,30 @@ router.post('/login', passport.authenticate('local'), (req, res) =>{
 
 // Signup route
 router.post('/signup', async (req, res, next) => {
-  const { email, password } = req.body
+  const { email, password } = req.body;
+  console.log(req.body);
+
   try {
-    const existingUser = prisma.user.findUnique({
+    const existingUser = await prisma.User.findUnique({
       where: {
-        email: email,
-        password: password
+        email: email
       }
       
     });
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
-    } else {
-      const hashPassword = await bcrypt.hash(password, 10);
-      const newUser = await prisma.user.create ({
+    } 
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.User.create ({
+      data:{
         email: email,
         password: hashPassword,
+      }
       });
       return res.json(newUser);
-    }
-
-  } catch(error) {
+    } catch(error) {
+      console.error('error', error);
       return res.status(500).json({ error: 'Internal Server Error'});
   }
 });

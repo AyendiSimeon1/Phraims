@@ -5,17 +5,14 @@ const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
-// Serialize user object to store in session
 passport.use(new LocalStrategy(async (email, password, done) => {
   try {
-    const user = await prisma.user.findUnique({ where:
+    const user = await prisma.User.findUnique({ where:
        { email: email },
        });
     if (!user) {
       return done(null, false, { message: 'Incorrect email.' });
     }
-
-    
     
     return done(null, user);
     
@@ -30,7 +27,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.User.findUnique({ where: { id } });
     done(null, user);
   } catch (error) {
     done(error);
