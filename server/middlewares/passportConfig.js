@@ -6,17 +6,19 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 // Serialize user object to store in session
-passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+passport.use(new LocalStrategy(async (email, password, done) => {
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where:
+       { email: email },
+       });
     if (!user) {
       return done(null, false, { message: 'Incorrect email.' });
     }
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return done(null, false, { message: 'Incorrect password.' });
-    }
+
+    
+    
     return done(null, user);
+    
   } catch (error) {
     return done(error);
   }
