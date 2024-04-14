@@ -68,132 +68,134 @@ router.post('/signup', async (req, res, next) => {
       return res.status(500).json({ error: 'Internal Server Error'});
   }
 });
-// Function to send welcome email
-// const sendWelcomeEmail = (email) => {
-//   const transporter = nodemailer.createTransport({
-//     // Configure your email provider here
-//     // For example, Gmail SMTP settings:
-//     service: 'gmail',
-//     auth: {
-//       user: 'your-email@gmail.com',
-//       pass: 'your-password',
-//     },
-//   });
 
-//   const mailOptions = {
-//     from: 'your-email@gmail.com',
-//     to: email,
-//     subject: 'Welcome to our service!',
-//     text: 'Thank you for signing up. We hope you enjoy using our service!',
-//   };
+// Password reset route
+ router.post('/password-reset', async (req, res, next) => {
+   try { 
+     const { email } = req.body;
 
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error('Error sending email:', error);
-//     } else {
-//       console.log('Email sent:', info.response);
-//     }
-//   });
-// };
+     // Find user by email
+     const user = await prisma.User.findUnique({
+       where: {
+         email: email,
+       },
+            });
 
-
-
-// // Password reset route
-// router.post('/password-reset', async (req, res, next) => {
-//   try {
-//     const { email } = req.body;
-
-//     // Find user by email
-//     const user = await prisma.user.findUnique({
-//       where: {
-//         email: email,
-//       },
-//     });
-
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
+     if (!user) {
+       return res.status(404).json({ message: 'User not found' });
+     }
 
 //     // Generate a password reset token (you should implement this function)
-//     const resetToken = generateResetToken();
-
-//     // Update user record with the reset token
-//     await prisma.user.update({
-//       where: {
-//         email: email,
-//       },
-//       data: {
-//         resetToken: resetToken,
-//       },
-//     });
+     const token = Math.random().toString(36).str(2); 
+     const resetToken = await prisma.resetToken.create({
+       where: {
+         email: email,
+       },
+       data: {
+         token: token,
+         expires: new Date(Date.now() + 3600000),
+       }
+     });
 
 //     // Send password reset email
-//     sendPasswordResetEmail(email, resetToken);
+     sendPasswordResetEmail(email, resetToken);
 
-//     return res.status(200).json({ message: 'Password reset email sent successfully' });
-//   } catch (error) {
-//     return next(error);
-//   }
-// });
+     return res.status(200).json({ message: 'Password reset email sent successfully' });
+   } catch (error) {
+     return next(error);
+   }
+ });
 
 // // Function to send password reset email
-// const sendPasswordResetEmail = (email, resetToken) => {
-//   const transporter = nodemailer.createTransport({
+ const sendPasswordResetEmail = (email, resetToken) => {
+   const transporter = nodemailer.createTransport({
 //     // Configure your email provider here
 //     // For example, Gmail SMTP settings:
-//     service: 'gmail',
-//     auth: {
-//       user: 'your-email@gmail.com',
-//       pass: 'your-password',
-//     },
-//   });
+     service: 'gmail',
+     auth: {
+       user: 'ayendisimeon3@gmail.com',
+       pass: '@19Ana156',
+     },
+   });
 
-//   const mailOptions = {
-//     from: 'your-email@gmail.com',
-//     to: email,
-//     subject: 'Password Reset Request',
-//     text: `To reset your password, click the following link: http://yourwebsite.com/reset?token=${resetToken}`,
-//   };
+   const mailOptions = {
+     from: 'ayrndisimeon3@gmail.com',
+     to: email,
+     subject: 'Password Reset Request',
+     text: `To reset your password, click the following link: http://localhost:3000/reset?token=${resetToken}`,
+   };
 
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error('Error sending email:', error);
-//     } else {
-//       console.log('Email sent:', info.response);
-//     }
-//   });
-// };
+   transporter.sendMail(mailOptions, (error, info) => {
+     if (error) {
+       console.error('Error sending email:', error);
+     } else {
+       console.log('Email sent:', info.response);
+           }
+   });
+ };
 
 // // Function to generate a random reset token (replace with your own implementation)
-// const generateResetToken = () => {
-//   return Math.random().toString(36).substr(2); // Example: Generate a random string
-// };
+ 
+router.get('/reset', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const resetToken = await ResetToken.findFirst({
+      where: {
+        token,
+        expires: { gt: Date.now() }, // Check for unexpired token
+      },
+      include: { user: true }, // Include associated user
+    });
+
+    if (!resetToken) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash new password securely
+
+    await User.update({
+      where: { id: resetToken.userId },
+      data: { password: hashedPassword },
+    });
+
+    // Invalidate the used ResetToken
+    await ResetToken.delete({ where: { id: resetToken.id } });
+
+    res.status(200).json({ message: 'Password reset successful.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'An error occurred. Please try again later.' });
+  }
+});
 
 
 
-// // Profile page route
-// router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-//   try {
-//     // Fetch user data from database using req.user.id
-//     const user = await prisma.user.findUnique({
-//       where: {
-//         id: req.user.id,
-//       },
-//       select: {
-//         id: true,
-//         username: true,
-//         // Include other fields you want to include in the response
-//       },
-//     });
+ // Profile page route
+router.get('/profile', passport.authenticate('local', { session: false }), async (req, res, next) => {
+   try {
 
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
+     const user = await prisma.User.findUnique({
+       where: {
+         id: req.user.id,
+       },
+       select: {
+         id: true,
+         username: true,
 
-//     return res.json({ user });
-//   } catch (error) {
-//     return next(error);
-//   }
-// });
+       },
+     });
+
+     if (!user) {
+       return res.status(404).json({ message: 'User not found' });
+     }
+
+     return res.json({ user });
+   } catch (error) {
+     return next(error);
+   }
+ });
+
+
 
 module.exports = router;
