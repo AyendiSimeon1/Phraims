@@ -2,20 +2,17 @@ import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 
+
 interface FormData  {
-    username: string;
+    email: string;
     password: string;
-    id: string;
 
 }
 
-
 const  home: React.FC = () => {
-
     const [ formData, setFormData ] = useState<FormData>({
-        username: '',
-        password: '',
-        id: ''
+        email: '',
+        password: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,19 +23,27 @@ const  home: React.FC = () => {
     const handleSubmit = () => {
         console.log('It was submitte')
 
-
     }
 
     return(
        <form onSubmit={handleSubmit}>
-        <label htmlFor='username'>Username:</label> 
+        <label htmlFor='email'>Email:</label> 
         <input
-            value={formData.username}
+            value={formData.email}
             type='text'
-            id='username'
-            name='username'
+            id='email'
+            name='email'
             onChange={handleChange}
         />
+        <label htmlFor='password'>Password:</label> 
+        <input
+            value={formData.password}
+            type='text'
+            id='password'
+            name='password'
+            onChange={handleChange}
+        />
+        <button type='submit'>Sign Up</button>
        </form>
     )
 }
