@@ -172,7 +172,6 @@ router.get('/reset', async (req, res) => {
 
 
 
- // Profile page route
 router.get('/profile', passport.authenticate('local', { session: false }), async (req, res, next) => {
    try {
 
@@ -197,28 +196,31 @@ router.get('/profile', passport.authenticate('local', { session: false }), async
    }
  });
 
-router.get('/business/:location', async (req, res) => {
+router.get('/business/', async (req, res) => {
     const { location } = req.params;
-    const url = "https://maps.googleapis.com/maps/api/js?query=${location}key=${GOOGLE_API_KEY}&loading=async&libraries=places&callback=initMap"
+    const url = "https://places.googleapis.com/v1/places:searchText"
     try {
-      
-      
       const response = await axios.get(url);
-      const businessData = response.data.results
 
-      const formatedBusiness = businessData.map(businessData => ({
-        name: businessData.name,
-        id: businessData.id,
-      }));
+      // if (!response.data){
+      //   return res.status(500).json({message: 'Oh no'})
+      // }
+      const businessData = response.data
 
-      res.json(formatedBusiness);
+      // const formatedBusiness = businessData.map(businessData => ({
+      //   name: businessData.name,
+      //   id: businessData.id,
+      // }));
+
+      res.json(businessData);
 
 
     } catch (error) {
-      return res.status(500).json({ error: 'There was an error'})
+      return console.error(error);
     }
     
 });
 
 module.exports = router;
 
+// https://places.googleapis.com/v1/places/GyuEmsRBfy61i59si0?fields=addressComponents&key=YOUR_API_KEY

@@ -26,3 +26,15 @@ model ResetToken {
   expires   DateTime @default(now() + 3600000) // 1 hour expiration
   user      User     @relation(fields: [userId], references: [id])
 }
+
+model Search {
+  id          Int         @id @default(autoincrement())
+  searchItem  String?
+  timeStamp   DateTime    @default(now())
+  data        searchData  @relation(fields:[dataId] , references:[id])
+}
+
+model searchData {
+  id          Int         @id @default(autoincrement())
+  searchId    Int         @unique
+}
