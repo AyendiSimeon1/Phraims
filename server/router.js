@@ -6,7 +6,7 @@ const nodemailer = require('nodemailer');
 const session = require('express-session');
 const swaggerSpec = require('./swaggerConfig.js');
 const swaggerUi = require('swagger-ui-express')
-
+const axios = require('axios');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
@@ -21,6 +21,7 @@ router.use(session({
 router.use(passport.initialize());
 router.use(passport.session());
 
+const GOOGLE_API_KEY = 'AIzaSyCJcZI4jweKNfvTr4v4J6Z3psmnhOf9OS0';
 
 router.get('/', (req, res) => {
   res.json({ message: 'Hello from Users API' });
@@ -45,7 +46,7 @@ router.post('/signup', async (req, res, next) => {
   try {
     const existingUser = await prisma.User.findUnique({
       where: {
-        email: email
+        email: 'a@gmail.com',
       }
       
     });
@@ -62,7 +63,7 @@ router.post('/signup', async (req, res, next) => {
         password: hashPassword,
       }
       });
-      return res.json(newUser);
+      return res.json(newUser, 'User created successfuly');
     } catch(error) {
       console.error('error', error);
       return res.status(500).json({ error: 'Internal Server Error'});
@@ -196,6 +197,28 @@ router.get('/profile', passport.authenticate('local', { session: false }), async
    }
  });
 
+router.get('/business/:location', async (req, res) => {
+    const { location } = req.params;
+    const url = "https://maps.googleapis.com/maps/api/js?query=${location}key=${GOOGLE_API_KEY}&loading=async&libraries=places&callback=initMap"
+    try {
+      
+      
+      const response = await axios.get(url);
+      const businessData = response.data.results
 
+      const formatedBusiness = businessData.map(businessData => ({
+        name: businessData.name,
+        id: businessData.id,
+      }));
+
+      res.json(formatedBusiness);
+
+
+    } catch (error) {
+      return res.status(500).json({ error: 'There was an error'})
+    }
+    
+});
 
 module.exports = router;
+
