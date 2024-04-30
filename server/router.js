@@ -1,7 +1,8 @@
 
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
+require('dotenv').config()
+const passport = require('./middlewares/passportConfig.js');
 const nodemailer = require('nodemailer');
 const session = require('express-session');
 const swaggerSpec = require('./swaggerConfig.js');
@@ -9,15 +10,20 @@ const swaggerUi = require('swagger-ui-express')
 const axios = require('axios');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
+const LocalStrategy = require('passport-local');
 const prisma = new PrismaClient();
 
-router.use(express.json());
-router.use(session({
-  secret: 'admin',
-  resave: false,
-  //saveUnitialized: false
-}));
 
+router.use(
+  session({
+    secret: 'admin', // Choose a strong secret key
+    resave: false, // Avoid session resaving if unchanged
+    saveUninitialized: false, // Avoid saving uninitialized sessions
+  })
+);
+
+
+router.use(express.json());
 router.use(passport.initialize());
 router.use(passport.session());
 
@@ -34,11 +40,32 @@ router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
  *
 **/
 
-router.post('/login', passport.authenticate('local'), (req, res) =>{
-  res.json({ user: req.user });
-})
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      console.error('Authentication error:', err);
+      return next(err); 
+    }
 
-// Signup route
+    if (!user) {
+      console.log('User not found or incorrect credentials:', info);
+      return res.redirect('/'); 
+    }
+
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error('Login error:', loginErr);
+        return next(loginErr);
+      }
+
+      console.log('User authenticated:', user);
+      return res.status(200).json(); 
+    });
+  })(req, res, next); 
+});
+
+
+
 router.post('/signup', async (req, res, next) => {
   const { email, firstname, lastname, password } = req.body;
   console.log(req.body);
@@ -46,7 +73,7 @@ router.post('/signup', async (req, res, next) => {
   try {
     const existingUser = await prisma.User.findUnique({
       where: {
-        email: 'a@gmail.com',
+        email: email,
       }
       
     });
@@ -60,37 +87,31 @@ router.post('/signup', async (req, res, next) => {
         email: email,
         firstName: firstname,
         lastName: lastname,
-        password: hashPassword,
+        password: password,
       }
       });
-      return res.json(newUser, 'User created successfuly');
+      return res.status(201).json({newUser: 'User created successfuly' });
     } catch(error) {
       console.error('error', error);
       return res.status(500).json({ error: 'Internal Server Error'});
   }
 });
 
-// Password reset route
- router.post('/password-reset', async (req, res, next) => {
+router.post('/password-reset', async (req, res, next) => {
    try { 
      const { email } = req.body;
-
-     // Find user by email
      const user = await prisma.User.findUnique({
-       where: {
-         email: email,
-       },
+       where: { email },
             });
 
      if (!user) {
-       return res.status(404).json({ message: 'User not found' });
+       return res.status(404).json({ message: 'User does not exitst' });
      }
 
-//     // Generate a password reset token (you should implement this function)
      const token = Math.random().toString(36).str(2); 
      const resetToken = await prisma.resetToken.create({
        where: {
-         email: email,
+         email
        },
        data: {
          token: token,
@@ -98,7 +119,7 @@ router.post('/signup', async (req, res, next) => {
        }
      });
 
-//     // Send password reset email
+//    
      sendPasswordResetEmail(email, resetToken);
 
      return res.status(200).json({ message: 'Password reset email sent successfully' });
@@ -107,11 +128,10 @@ router.post('/signup', async (req, res, next) => {
    }
  });
 
-// // Function to send password reset email
+
  const sendPasswordResetEmail = (email, resetToken) => {
    const transporter = nodemailer.createTransport({
-//     // Configure your email provider here
-//     // For example, Gmail SMTP settings:
+
      service: 'gmail',
      auth: {
        user: 'ayendisimeon3@gmail.com',
@@ -135,10 +155,9 @@ router.post('/signup', async (req, res, next) => {
    });
  };
 
-// // Function to generate a random reset token (replace with your own implementation)
- 
 router.get('/reset', async (req, res) => {
-  const { token, newPassword } = req.body;
+  const { newPassword } = req.body;
+  const { token } = req.params;
 
   try {
     const resetToken = await ResetToken.findFirst({
@@ -153,14 +172,14 @@ router.get('/reset', async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired token.' });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash new password securely
+    //const hashedPassword = await bcrypt.hash(newPassword, 10); // Hash new password securely
 
     await User.update({
       where: { id: resetToken.userId },
-      data: { password: hashedPassword },
+      data: { password: newPassword },
     });
 
-    // Invalidate the used ResetToken
+
     await ResetToken.delete({ where: { id: resetToken.id } });
 
     res.status(200).json({ message: 'Password reset successful.' });
@@ -196,9 +215,12 @@ router.get('/profile', passport.authenticate('local', { session: false }), async
    }
  });
 
-router.get('/business/', async (req, res) => {
-    const { location } = req.params;
-    const url = "https://places.googleapis.com/v1/places:searchText"
+router.get('/email-finder/', async (req, res) => {
+    const { domain } = req.body;
+    const apiKey = process.env.HUNTER_API_KEY
+    const urlOne = "https://api.hunter.io/v2/domain-search?domain=paystack.com&api_key=f39cfbbd37ab42e7a1317b8d72d1f448aa5a48d1";
+    const url =  `https://api.hunter.io/v2/domain-search?domain=${domain}&api_key=${apiKey}`;
+    console.log(url);
     try {
       const response = await axios.get(url);
 
@@ -222,5 +244,3 @@ router.get('/business/', async (req, res) => {
 });
 
 module.exports = router;
-
-// https://places.googleapis.com/v1/places/GyuEmsRBfy61i59si0?fields=addressComponents&key=YOUR_API_KEY
