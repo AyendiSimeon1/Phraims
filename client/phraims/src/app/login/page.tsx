@@ -20,7 +20,8 @@ const  home: React.FC = () => {
 
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         console.log('It was submitte')
 
     }
