@@ -1,9 +1,10 @@
-export default function Page() {
-    return(
-    <div>
-        <h1>Hello How have you been my friend</h1>
-    <p>Hope Your ok</p>
-    </div>
-   
-    )
+import React from "react";
+
+const Dashboard = () => {
+
+    return (
+        <h1>Welcome</h1>
+    );
 }
+
+export default Dashboard;
