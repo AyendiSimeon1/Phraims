@@ -10,31 +10,31 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  firstName String  
-  lastName  String  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  password    String
+  firstName   String  
+  lastName    String  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  fetchedData FetchedData[] @relation
 }
 
-model ResetToken {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  token     String   @unique
-  expires   DateTime @default(now() + 3600000) // 1 hour expiration
-  user      User     @relation(fields: [userId], references: [id])
+
+model FetchedData {
+  id              Int         @id @default(autoincrement())
+  searchItem      String?
+  firstNameOne    String?
+  lastNameOne     String?
+  emailOne        String?
+  firstNameTwo    String?
+  lastNameTwo     String?
+  emailTwo        String?
+  firstNameThree  String?
+  lastNameThree   String?
+  emailThree      String?
+  timeStamp       DateTime    @default(now())
+  userId          Int
+  user            User        @relation(fields:[userId], references:[id])
 }
 
-model Search {
-  id          Int         @id @default(autoincrement())
-  searchItem  String?
-  timeStamp   DateTime    @default(now())
-  data        searchData  @relation(fields:[dataId] , references:[id])
-}
-
-model searchData {
-  id          Int         @id @default(autoincrement())
-  searchId    Int         @unique
-}

@@ -226,25 +226,38 @@ router.get('/email-finder/', async (req, res) => {
         res.status(200).json({ message: 'No data found for the provided domain' });
       }
 
+      const emailOne = domainData.data?.emails;
+      const firstNameOne = domainData.data?.emails[0].first_name
+      const lastNameOne = domainData?.data?.emails[0].last_name
 
-      const domainData = response.data;
-      
+      const emailTwo = domainData.data?.emails;
+      const firstNameTwo = domainData.data?.emails[1].first_name
+      const lastNameTwo = domainData?.data?.emails[1].last_name
 
+      const emailThree = domainData.data?.emails;
+      const firstNameThree = domainData.data?.emails[2].first_name
+      const lastNameThree = domainData?.data?.emails[1].last_name
+   
 
-      const email = domainData.data?.emails;
-      const firstname = domainData.data?.emails?.firstName
-      const lastname = domainData?.data?.emails?.last_name
-      const position = domainData.data?.emails.position
+      const user = await prisma.User.update({
+        where : { email: 'admin' },
+        data: {
+          fetchedData : {
+            emailOne: emailOne,
+            firstNameOne: firstNameOne,
+            lastNameOne: lastNameOne,
+            emailTwo: emailTwo,
+            firstNameTwo: firstNameTwo,
+            lastNameTwo: lastNameTwo,
+            emailThree: emailThree,
+            firstNameThree: firstNameThree,
+            lastNameThree: lastNameThree
 
-    
-  
-      console.log(email,  firstname, lastname, positon);
-      console.log('response.data.emails[0]:', domainData.data.emails[0]);
-  
-
+          }
+          
+        }
+      })
       res.json(domainData);
-
-
     } catch (error) {
       return console.error(error);
     }
