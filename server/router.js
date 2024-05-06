@@ -12,7 +12,7 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const LocalStrategy = require('passport-local');
 const prisma = new PrismaClient();
-
+const bodyParser = require('body-parser');
 
 router.use(
   session({
@@ -22,7 +22,7 @@ router.use(
   })
 );
 
-
+router.use(bodyParser.json());
 router.use(express.json());
 router.use(passport.initialize());
 router.use(passport.session());
@@ -218,23 +218,31 @@ router.get('/profile', passport.authenticate('local', { session: false }), async
 router.get('/email-finder/', async (req, res) => {
     const { domain } = req.body;
     const apiKey = process.env.HUNTER_API_KEY
-    const urlOne = "https://api.hunter.io/v2/domain-search?domain=paystack.com&api_key=f39cfbbd37ab42e7a1317b8d72d1f448aa5a48d1";
     const url =  `https://api.hunter.io/v2/domain-search?domain=${domain}&api_key=${apiKey}`;
-    console.log(url);
     try {
+      
       const response = await axios.get(url);
+      if (!response.data) {
+        res.status(200).json({ message: 'No data found for the provided domain' });
+      }
 
-      // if (!response.data){
-      //   return res.status(500).json({message: 'Oh no'})
-      // }
-      const businessData = response.data
 
-      // const formatedBusiness = businessData.map(businessData => ({
-      //   name: businessData.name,
-      //   id: businessData.id,
-      // }));
+      const domainData = response.data;
+      
 
-      res.json(businessData);
+
+      const email = domainData.data?.emails;
+      const firstname = domainData.data?.emails?.firstName
+      const lastname = domainData?.data?.emails?.last_name
+      const position = domainData.data?.emails.position
+
+    
+  
+      console.log(email,  firstname, lastname, positon);
+      console.log('response.data.emails[0]:', domainData.data.emails[0]);
+  
+
+      res.json(domainData);
 
 
     } catch (error) {
