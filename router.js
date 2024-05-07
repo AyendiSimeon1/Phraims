@@ -222,42 +222,47 @@ router.get('/email-finder/', async (req, res) => {
     try {
       
       const response = await axios.get(url);
+      const domainData = response.data;
       if (!response.data) {
         res.status(200).json({ message: 'No data found for the provided domain' });
       }
 
-      const emailOne = domainData.data?.emails;
+      const emailOne = domainData.data?.emails[0]?.value
       const firstNameOne = domainData.data?.emails[0].first_name
       const lastNameOne = domainData?.data?.emails[0].last_name
 
-      const emailTwo = domainData.data?.emails;
+      const emailTwo = domainData.data?.emails[1]?.value;
       const firstNameTwo = domainData.data?.emails[1].first_name
       const lastNameTwo = domainData?.data?.emails[1].last_name
 
-      const emailThree = domainData.data?.emails;
+      const emailThree = domainData.data?.emails[2]?.value;
       const firstNameThree = domainData.data?.emails[2].first_name
-      const lastNameThree = domainData?.data?.emails[1].last_name
+      const lastNameThree = domainData?.data?.emails[2].last_name
    
 
       const user = await prisma.User.update({
-        where : { email: 'admin' },
+        where : { email: 'simeon@gmail.com' },
+        
         data: {
           fetchedData : {
-            emailOne: emailOne,
-            firstNameOne: firstNameOne,
-            lastNameOne: lastNameOne,
-            emailTwo: emailTwo,
-            firstNameTwo: firstNameTwo,
-            lastNameTwo: lastNameTwo,
-            emailThree: emailThree,
-            firstNameThree: firstNameThree,
-            lastNameThree: lastNameThree
+            create: {
+              emailOne: emailOne,
+              firstNameOne: firstNameOne,
+              lastNameOne: lastNameOne,
+              emailTwo: emailTwo,
+              firstNameTwo: firstNameTwo,
+              lastNameTwo: lastNameTwo,
+              emailThree: emailThree,
+              firstNameThree: firstNameThree,
+              lastNameThree: lastNameThree
+            }
+            
 
           }
           
         }
       })
-      res.json(domainData);
+      res.json(user);
     } catch (error) {
       return console.error(error);
     }

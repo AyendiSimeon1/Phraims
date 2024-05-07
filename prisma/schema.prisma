@@ -20,6 +20,11 @@ model User {
   fetchedData FetchedData[] @relation
 }
 
+model Token {
+  id          Int         @id @default(autoincrement())
+  token       String      
+  expires     String      
+}
 
 model FetchedData {
   id              Int         @id @default(autoincrement())
