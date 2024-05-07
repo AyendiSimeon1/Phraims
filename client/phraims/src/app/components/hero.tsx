@@ -14,7 +14,7 @@ const Hero = () => {
 
     return (
         <div className="p-0">
-            <div className=" flex justify-center items-center mb-5">
+            <div className=" justify-center items-center mb-5">
                 <div className="">
                 <h1 className="text-6xl text-center text-slate-900 font-bold mt-10 pt-5" >Supercharge Your Business<br /> with 
                 Email Marketing</h1>
@@ -30,52 +30,84 @@ const Hero = () => {
                     <p className="p-3 text-xl">B2B Email Marketing</p>
                     <p className="p-3 text-xl">Automated Email Marketing</p>
                 </div>
-                <div className="flex justify-center items-center m-0 p-0 sm:!flex lg:flex">
-                        <div className="bg-yellow-100 m-10 p-2 rounded-lg mx-8"> 
-                            <Image src="/images/img.jpg" alt="new" className="w-full rounded-lg" width={100} height={100} />
-                                    <span className="p-2 m-2 bg-black text-white rounded-full">01</span>
-                                 <h2 className="text-slate-900 text-2xl py-4">Expanding Your Business</h2>
-                                <p>Try out Benchmark for free to discover how simple effective email marketing can be.</p>
-                        </div>
-                        <div className="bg-yellow-100 m-2 p-0 rounded-lg">
-                            
-                            <Image src="/images/img.jpg" alt="new" className="w-full rounded-lg" width={100} height={100} />
-                        
-                                    <span className="p-2 m-2 bg-black text-white rounded-full">01</span>
-                                 <h2 className="text-slate-900 text-2xl py-4">Expanding Your Business</h2>
-                                <p>Try out Benchmark for free to discover how simple effective email marketing can be.</p>
-                        </div>
-                        <div className="bg-yellow-100 m-2 p-0 rounded-lg">
-                            
-                            
-                        <Image src="/images/img.jpg" alt="new" className="w-full rounded-lg" width={100} height={100} />
-                        
-                        
-                                    <span className="p-2 m-2 bg-black text-white rounded-full">01</span>
-                                 <h2 className="text-slate-900 text-2xl py-4">Expanding Your Business</h2>
-                                <p>Try out Benchmark for free to discover how simple effective email marketing can be.</p>
-                        </div>
+                <div className="sm:!flex flex-col md:flex-row justify-center items-center m-0 p-0">
+                    <div className="bg-yellow-100 m-4 md:m-10 p-2 rounded-lg">
+                        <Image
+                        src="/images/img.jpg"
+                        alt="new"
+                        className="w-full rounded-lg"
+                        width={100}
+                        height={100}
+                        />
+                        <span className="p-2 m-2 bg-black text-white rounded-full">01</span>
+                        <h2 className="text-slate-900 text-2xl py-4">Expanding Your Business</h2>
+                        <p>
+                        Try out Benchmark for free to discover how simple effective email
+                        marketing can be.
+                        </p>
                     </div>
-                    <div className="bg-black flex text-center justify-center items-center pl-4 pt-10  pb-10 ">
-                        <div className="p-6 mx-8">
-                            <p className="text-slate-500 text-xl text-yellow-500 p-4 mx-3">95%</p>
-                            <p className="text-white ml-4">Of members asks on Marketer <br /> Get a Response</p>
-                        </div>
-                        <div className="p-6 mx-8">
-                            <p className="text-slate-500 text-xl text-yellow-500 p-4 mx-3 ">95%</p>
-                            <p className="text-white mx-4">Of members asks on Marketer <br /> Get a Response</p>
-                        </div>
-                        <div className="p-6 mx-8">
-                            <p className="text-slate-500 text-xl text-yellow-500 p-4 ">95%</p>
-                            <p className="text-white mx-4">Of members asks on Marketer <br /> Get a Response</p>
-                        </div>
-                        <div className="p-6 mx-8">
-                            <p className="text-slate-500 text-xl p-4 text-yellow-500 ">95%</p>
-                            <p className="text-white mx-4">Of members asks on Marketer <br /> Get a Response</p>
-                        </div>
+
+                    <div className="bg-yellow-100 m-4 md:m-10 p-2 rounded-lg">
+                        <Image
+                        src="/images/img.jpg"
+                        alt="new"
+                        className="w-full rounded-lg"
+                        width={100}
+                        height={100}
+                        />
+                        <span className="p-2 m-2 bg-black text-white rounded-full">02</span>
+                        <h2 className="text-slate-900 text-2xl py-4">Expanding Your Business</h2>
+                        <p>
+                        Try out Benchmark for free to discover how simple effective email
+                        marketing can be.
+                        </p>
+                    </div>
+
+                    <div className="bg-yellow-100 m-4 md:m-10 p-2 rounded-lg">
+                        <Image
+                        src="/images/img.jpg"
+                        alt="new"
+                        className="w-full rounded-lg"
+                        width={100}
+                        height={100}
+                        />
+                        <span className="p-2 m-2 bg-black text-white rounded-full">03</span>
+                        <h2 className="text-slate-900 text-2xl py-4">Expanding Your Business</h2>
+                        <p>
+                        Try out Benchmark for free to discover how simple effective email
+                        marketing can be.
+                        </p>
                     </div>
                     </div>
-                </div>
+
+                    <div className="bg-black flex flex-col md:flex-row text-center justify-center items-center pl-4 pt-10 pb-10">
+                    <div className="p-6 mx-4 lg:mx-8">
+                        <p className="text-slate-500 text-xl text-yellow-500 p-4 mx-3">95%</p>
+                        <p className="text-white">
+                        Of members ask on Marketer <br /> Get a Response
+                        </p>
+                    </div>
+
+                    <div className="p-6 mx-4 lg:mx-8">
+                        <p className="text-slate-500 text-xl text-yellow-500 p-4 mx-3">95%</p>
+                        <p className="text-white">
+                        Of members ask on Marketer <br /> Get a Response
+                        </p>
+                    </div>
+
+                    <div className="p-6 mx-4 lg:mx-8">
+                        <p className="text-slate-500 text-xl text-yellow-500 p-4">95%</p>
+                        <p className="text-white">
+                        Of members ask on Marketer <br /> Get a Response
+                        </p>
+                    </div>
+
+                    <div className="p-6 mx-4 lg:mx-8">
+                        <p className="text-slate-500 text-xl text-yellow-500 p-4">95%</p>
+                        <p className="text-white">
+                        Of members ask on Marketer <br /> Get a Response
+                        </p>
+                    </div>
              
                 
                 <div className="flex bg-yellow-200 pt-10 pl-10 pb-8">
@@ -120,6 +152,9 @@ const Hero = () => {
                     </div>
                     
                 </div>
+       </div>
+       </div>
+     </div>
        </div>
     );
 }
