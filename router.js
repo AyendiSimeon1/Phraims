@@ -13,6 +13,7 @@ const bcrypt = require('bcryptjs');
 const LocalStrategy = require('passport-local');
 const prisma = new PrismaClient();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 router.use(
   session({
@@ -26,6 +27,7 @@ router.use(bodyParser.json());
 router.use(express.json());
 router.use(passport.initialize());
 router.use(passport.session());
+router.use(cors());
 
 const GOOGLE_API_KEY = 'AIzaSyCJcZI4jweKNfvTr4v4J6Z3psmnhOf9OS0';
 
